@@ -1,6 +1,8 @@
 package co.uniquindio.pr2.agenda.application;
 
 
+import java.text.ParseException;
+
 import co.uniquindio.pr2.agenda.controllers.GestionAgendaController;
 import co.uniquindio.pr2.agenda.model.Agenda;
 import co.uniquindio.pr2.agenda.model.Categoria;
@@ -332,6 +334,38 @@ public class Aplicacion extends Application {
 		return fueEliminada;
 	}
 
+	/**
+	 *
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public String mostrarNotaReunion(Reunion reunionSeleccion) {
+		String notasReunion = agenda.mostrarNotasReunion(reunionSeleccion);
+		return notasReunion;
+	}
+
+	/**
+	 *
+	 * @param notaSeleccion
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public boolean aniadirReunionNota(Nota notaSeleccion, Reunion reunionSeleccion) {
+		boolean fueAgregado = agenda.aniadirReunionNota(notaSeleccion, reunionSeleccion);
+		return fueAgregado;
+	}
+
+	/**
+	 * Elimina una nota de una reunion
+	 * @param notaSeleccion
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public boolean eliminarReunionNota(Nota notaSeleccion, Reunion reunionSeleccion) {
+		boolean fueEliminado = agenda.eliminarReunionNota(notaSeleccion, reunionSeleccion);
+		return fueEliminado;
+	}
+
 //----------------------Puntos del preParcial---------------------------------------------------------------
 	/**
 	 * numero de contactos con 5 vocales
@@ -349,6 +383,17 @@ public class Aplicacion extends Application {
 		String grupos = agenda.darCadenaGruposOficinaDireccion();
 		return grupos;
 	}
+
+	public String darCadenaMatrizReuniones() throws ParseException {
+		String matriz = agenda.darCadenaMatrizReuniones();
+		return matriz;
+	}
+
+
+
+
+
+
 
 
 }

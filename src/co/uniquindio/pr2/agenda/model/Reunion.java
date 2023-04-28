@@ -1,7 +1,7 @@
 package co.uniquindio.pr2.agenda.model;
 
 import java.io.Serializable;
-import java.util.Arrays;
+
 
 public class Reunion implements Serializable{
 
@@ -82,12 +82,16 @@ public class Reunion implements Serializable{
 	}
 
 
-	@Override
+	/*@Override
 	public String toString() {
 		return "Reunion [descripcion=" + descripcion + ", fecha=" + fecha + ", hora=" + hora + ", listaContactos="
 				+ Arrays.toString(listaContactos) + "]";
-	}
+	}*/
 
+	@Override
+	public String toString() {
+		return "Reunion [descripcion=" + descripcion + "]";
+	}
 
 	@Override
 	public int hashCode() {
@@ -97,7 +101,6 @@ public class Reunion implements Serializable{
 		result = prime * result + ((hora == null) ? 0 : hora.hashCode());
 		return result;
 	}
-
 
 	@Override
 	public boolean equals(Object obj) {

@@ -5,6 +5,7 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 
@@ -43,8 +44,8 @@ public class Agenda implements Serializable {
 		listaGrupos[1] = grupo2;
 
 		//Inicializo valores para las reuniones en la tabla
-		Reunion reunion1 = new Reunion("Aspectos legales", "12/05/2023", "14:05", 10, 10);
-		Reunion reunion2 = new Reunion("Aspectos de infraestructura", "10/05/2023", "10:05", 10, 10);
+		Reunion reunion1 = new Reunion("Aspectos legales", "01/11/2022", "14:05", 10, 10);
+		Reunion reunion2 = new Reunion("Aspectos de infraestructura", "11/12/2022", "10:05", 10, 10);
 		listaReuniones[0] = reunion1;
 		listaReuniones[1] = reunion2;
 
@@ -993,7 +994,98 @@ public class Agenda implements Serializable {
 		}
 	}
 
+	/**
+	 *
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public String mostrarNotasReunion(Reunion reunionSeleccion) {
+		String notasReunion = "";
+		for(Nota nota : reunionSeleccion.getListaNotas()) {
+			if(nota != null) {
+				notasReunion = notasReunion + nota.getCodigo() + " : " + nota.getComentarios() + "\n";
+			}
+		}
+		return notasReunion;
+	}
+
+	/**
+	 * Añade una nota seleccionada a una reunioin seleccionada
+	 * @param notaSeleccion
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public boolean aniadirReunionNota(Nota notaSeleccion, Reunion reunionSeleccion) {
+		boolean fueAgregado = false;
+		Nota[] listaNotasAux = reunionSeleccion.getListaNotas();
+		int posDisponibleNota = obtenerPosicionLibreReunionNota(listaNotasAux);
+		if(!existeReunionNota(notaSeleccion, listaNotasAux) && posDisponibleNota != -1) {
+			listaNotasAux[posDisponibleNota] = notaSeleccion;
+			reunionSeleccion.setListaNotas(listaNotasAux);
+			fueAgregado = true;
+		}
+		return fueAgregado;
+	}
+
+	/**
+	 * Me obtiene la posicion libre en la lista de notas que tiene la reunion
+	 * @param listaNotasAux
+	 * @return
+	 */
+	private int obtenerPosicionLibreReunionNota(Nota[] listaNotasAux) {
+		for(int i = 0; i < listaNotasAux.length; i++) {
+			if(listaNotasAux[i] == null) {
+				return i;
+			}
+		}
+		return -1;
+	}
+
+	/**
+	 *
+	 * @param notaSeleccion
+	 * @param listaNotasAux
+	 * @return
+	 */
+	private boolean existeReunionNota(Nota notaSeleccion, Nota[] listaNotasAux) {
+		boolean existe = false;
+		for(Nota nota : listaNotasAux) {
+			if(nota != null && nota.equals(notaSeleccion)) {
+				existe = true;
+				break;
+			}
+		}
+		return existe;
+	}
+
+	/**
+	 * Dice si se pudo eliminar una nota de una reunion
+	 * @param notaSeleccion
+	 * @param reunionSeleccion
+	 * @return
+	 */
+	public boolean eliminarReunionNota(Nota notaSeleccion, Reunion reunionSeleccion) {
+		boolean fueEliminado = false;
+		//Elimino la nota de la respectiva lista de reunion
+		Nota[] listaNotaAux = reunionSeleccion.getListaNotas();
+		for(int i = 0; i < listaNotaAux.length; i++) {
+			Nota nota = listaNotaAux[i];
+			if(nota != null && nota.equals(notaSeleccion)) {
+				listaNotaAux[i] = null;
+				reunionSeleccion.setListaNotas(listaNotaAux);
+				fueEliminado = true;
+				break;
+			}
+		}
+		return fueEliminado;
+	}
+
+
+
 //------------------------Puntos del preParcial--------------------------------------------------------------------------
+
+
+
 
 	/**
 	 * Elimina los contactos de la lista de contactos que tengan las 5 vocales
@@ -1034,6 +1126,102 @@ public class Agenda implements Serializable {
 		return grupos.toString();
 	}
 
+	/**
+	 * Me da la matriz con fechas dadas por cada fila
+	 * @return
+	 * @throws ParseException
+	 */
+	public Reunion[][] darMatrizReuniones() throws ParseException {
+		Reunion[][] reunionesPorFechas = new Reunion[3][listaReuniones.length];
+		reunionesPorFechas[0] = darReunionesFecha("01/11/2022", "30/11/2022"); //Da reuniones de noviembre
+		reunionesPorFechas[1] = darReunionesFecha("01/12/2022", "31/12/2022"); //Da reuniones de diciembre
+		reunionesPorFechas[2] = darReunionesFecha("01/01/2022", "30/12/2022"); //Da reuniones del 2022
+		return reunionesPorFechas;
+	}
+
+	/**
+	 * Esta funcion revisa si una reunion se encuentra en un rango de fechas
+	 * @param fechaInicialStr
+	 * @param fechaFinalStr
+	 * @param fechaReunionStr
+	 * @return
+	 * @throws ParseException Este throws es para cuando la fecha no cumple con el formato
+	 */
+	public boolean verificarFechaReunion(String fechaInicialStr, String fechaFinalStr, String fechaReunionStr) throws ParseException {
+	    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+	    Date fechaInicial = formato.parse(fechaInicialStr);
+	    Date fechaFinal = formato.parse(fechaFinalStr);
+	    Date fechaReunion = formato.parse(fechaReunionStr);
+
+	    if (fechaReunion.after(fechaInicial) || fechaReunion.equals(fechaInicial)) {
+	        if (fechaReunion.before(fechaFinal) || fechaReunion.equals(fechaFinal)) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
+	/**
+	 * Retorna un arreglo de reuniones que cumplan con una fecha inicial y una fecha final
+	 * @param fechaIncial
+	 * @param fechaFinal
+	 * @return
+	 * @throws ParseException
+	 */
+	private Reunion[] darReunionesFecha(String fechaIncial, String fechaFinal) throws ParseException {
+		Reunion[] reuniones = new Reunion[listaReuniones.length];
+		int i = 0; //Es para saber en que posición agrego el ultimo elemento y para hacer el copyOf
+		for(Reunion reunion : listaReuniones) {
+			if(reunion != null) {
+				if(verificarFechaReunion(fechaIncial, fechaFinal, reunion.getFecha())) {
+					reuniones[i] = reunion;
+					i++;
+				}
+			}
+		}
+		//Se "corta" el arreglo para que quede exactamente con los elemento que contiene
+		reuniones = Arrays.copyOf(reuniones, i);
+		return reuniones;
+	}
+
+	/**
+	 *
+	 * @return
+	 * @throws ParseException
+	 */
+	/*public String darCadenaMatrizReuniones() throws ParseException {
+		Reunion[][] matriz = darMatrizReuniones();
+		String cadena = "";
+		for(int i = 0; i < matriz.length; i++) {
+			for(int j = 0; j < matriz[i].length; j++) {
+				cadena += matriz[i][j].getDescripcion() + " ";
+			}
+			cadena += "\n";
+		}
+		return cadena;
+	}*/
+
+	/**
+	 *
+	 * @return
+	 * @throws ParseException
+	 */
+	public String darCadenaMatrizReuniones() throws ParseException {
+		Reunion[][] matriz = darMatrizReuniones();
+		String cadena = "";
+		for(Reunion[] reunion : matriz) {
+			System.out.println(Arrays.toString(reunion));
+		}
+		return cadena;
+	}
+
+
+//----------------------------------------------Ejercicio en clase---------------------------------------------
+
+	/*public ArrayList<Contacto> darContactosCapicua() {
+
+	}*/
 
 
 

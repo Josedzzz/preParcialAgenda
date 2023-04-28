@@ -1,6 +1,7 @@
 package co.uniquindio.pr2.agenda.controllers;
 
 import java.net.URL;
+import java.text.ParseException;
 import java.util.ResourceBundle;
 
 import co.uniquindio.pr2.agenda.application.Aplicacion;
@@ -227,6 +228,9 @@ public class GestionAgendaController implements Initializable {
 
     @FXML
     private Button btnGruposOficinaDireccion;
+
+    @FXML
+    private Button btnMatrizReuniones;
 
     //Creo la aplicacion
 	private Aplicacion aplicacion;
@@ -1150,19 +1154,67 @@ public class GestionAgendaController implements Initializable {
 		}
     }
 
+	/**
+	 * Muestra las notas que hay en una reunion
+	 * @param event
+	 */
     @FXML
     void mostrarNotaReunion(ActionEvent event) {
-
+    	if(reunionSeleccion != null) {
+     		String notasReunion = aplicacion.mostrarNotaReunion(reunionSeleccion);
+    		mostrarMensaje("Notificación reunión", "Notas en reunión " + reunionSeleccion.getDescripcion() + ": ",
+    				notasReunion, AlertType.INFORMATION);
+    	} else {
+     		mostrarMensaje("Reunión selección", "Reunión selección", "No se ha seleccionado ninguna reunión", AlertType.WARNING);
+    	}
     }
 
+    /**
+     * Añade una nota a una reunion
+     * @param event
+     */
     @FXML
     void aniadirReunionNota(ActionEvent event) {
-
+    	if(notaSeleccion != null && reunionSeleccion != null) {
+    		if(aplicacion.aniadirReunionNota(notaSeleccion, reunionSeleccion)) {
+      			tableViewReuniones.getItems().clear();
+    			tableViewReuniones.setItems(getReuniones());
+    			tableViewNotas.getItems().clear(); //Limpio la lista
+    			tableViewNotas.setItems(getNotas()); //Agrego nuevos datos a la lista
+       			mostrarMensaje("Notificación nota", "Notificación nota", "Se ha añadido la nota " +
+    					notaSeleccion.getComentarios() + " a la reunión " + reunionSeleccion.getDescripcion(), AlertType.INFORMATION);
+    		} else {
+    			mostrarMensaje("Notificación nota", "Notificación nota", "No se pudo añadir la nota."
+    					+ " Esto se debe a que no hay espacios disponibles o la nota ya existe en esta reunión", AlertType.WARNING);
+    		}
+    	} else {
+    		mostrarMensaje("Notificación nota", "Notificación nota", "Por favor verifique que se haya "
+    				+ "selccionado la reunión y la nota deseada", AlertType.WARNING);
+    	}
     }
 
+    /**
+     * Elimina una nota de una reunion
+     * @param event
+     */
     @FXML
     void eliminarReunionNota(ActionEvent event) {
-
+    	if(notaSeleccion != null && reunionSeleccion != null) {
+    		if(aplicacion.eliminarReunionNota(notaSeleccion, reunionSeleccion)) {
+       			tableViewReuniones.getItems().clear();
+    			tableViewReuniones.setItems(getReuniones());
+    			tableViewNotas.getItems().clear(); //Limpio la lista
+    			tableViewNotas.setItems(getNotas()); //Agrego nuevos datos a la lista
+    			mostrarMensaje("Notificación nota", "Notificación nota", "Se pudo eliminar la nota " +
+    					notaSeleccion.getCodigo() + " de la reunión " + reunionSeleccion.getDescripcion(), AlertType.INFORMATION);
+    		} else {
+    			mostrarMensaje("Notificación nota", "Notificación nota", "No se pudo eliminar la nota " +
+    					" verifique que esa nota si perteneciera a la reunión indicada", AlertType.WARNING);
+    		}
+    	} else {
+    		mostrarMensaje("Notificación nota", "Notificación nota", "Por favor verifique que se haya seleccionado"
+    				+ " la nota y la reunión deseada", AlertType.WARNING);
+    	}
     }
 
 //---------------Puntos preParcial 2----------------------------------------------------------------
@@ -1194,6 +1246,23 @@ public class GestionAgendaController implements Initializable {
     void darGruposOficinaDireccion(ActionEvent event) {
     	String grupos = aplicacion.darCadenaGruposOficinaDireccion();
    		mostrarMensaje("Notifiación información", "Notifiación información", grupos, AlertType.INFORMATION);
+    }
+
+    /**
+     * Me da una cadena representando la matriz de reuniones organizada en 3 filas por fechas
+     * @param event
+     */
+    @FXML
+    void darMatrizReuniones(ActionEvent event) {
+    	String matriz;
+		try {
+			matriz = aplicacion.darCadenaMatrizReuniones();
+			mostrarMensaje("Notifiación información", "Notifiación información", matriz, AlertType.INFORMATION);
+		} catch (ParseException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+
     }
 
 

@@ -214,6 +214,7 @@
                                     <Separator layoutX="4.0" layoutY="37.0" prefHeight="0.0" prefWidth="587.0" />
                                     <Button fx:id="btnEliminarContactos5Vocales" layoutX="21.0" layoutY="53.0" mnemonicParsing="false" onAction="#eliminarContactosCon5Vocales" text="Eliminar Contactos Vocales" />
                                     <Button fx:id="btnGruposOficinaDireccion" layoutX="225.0" layoutY="53.0" mnemonicParsing="false" onAction="#darGruposOficinaDireccion" text="Grupos oficina direccion" />
+                                    <Button fx:id="btnMatrizReuniones" layoutX="235.0" layoutY="220.0" mnemonicParsing="false" onAction="#darMatrizReuniones" text="Matriz de reuniones" />
                                  </children>
                               </AnchorPane>
                           </items>
