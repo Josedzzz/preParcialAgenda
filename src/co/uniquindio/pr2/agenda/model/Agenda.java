@@ -10,6 +10,7 @@ import java.util.List;
 
 
 
+
 public class Agenda implements Serializable {
 
 	/**
@@ -893,6 +894,11 @@ public class Agenda implements Serializable {
 		return contactosReunion;
 	}
 
+
+//--------------------------------------------------------------------------------------------------------------
+//--------------------------------------------------------------------------------------------------------------
+	//SOLUCION PARCIAL: Jose David Amaya Restrepo y Santiago Orozco Zuluaga
+
 	/**
 	 * Actualiza los atri
 	 * @param codigoNota
@@ -1080,6 +1086,134 @@ public class Agenda implements Serializable {
 		return fueEliminado;
 	}
 
+	/**
+	 * Me da un arreglo con todas las palabras de las notas de un comentario que empiezen con determinada letra
+	 * @param letra
+	 * @return
+	 */
+	public String[] darPalabrasComentarios(char letra) {
+		ArrayList<String> listaPalabrasComentarioAux = new ArrayList<>();
+		for(Reunion reunion : listaReuniones) {
+			listaPalabrasComentarioAux = reunion.getListaPalabrasComentarios(letra, listaPalabrasComentarioAux);
+		}
+		String[] listaPalabrasComentarios = new String[listaPalabrasComentarioAux.size()];
+		listaPalabrasComentarios = listaPalabrasComentarioAux.toArray(listaPalabrasComentarios);
+		return listaPalabrasComentarios;
+	}
+
+	/**
+	 * Tengo que retornar la lista que pertenecen a ese grupo
+	 * @param grupoFiltrar
+	 * @return
+	 */
+	public Object[] flitrarContactosGrupoEjemplo(Grupo grupoFiltrar) {
+		//Se setea la lista de contactos de la Agenda Telefonica como lista para recorrer el stream
+		List<Contacto> grupoAux = Arrays.asList(grupoFiltrar.getListaContactos());
+		//Se crea el arreglo que contiene los contactos que cumplan la condicion de tener numero de telefono capicua
+		Object[] listaContactosRetornar = grupoAux.stream().filter(contacto -> contacto!=null).toArray();
+		return listaContactosRetornar;
+	}
+
+	/**
+	 * Recorro la lista de contactos y busco que contacto pertenece al grupo que necesito
+	 * @return
+	 */
+	public ArrayList<Contacto> filtrarContactosGrupo(Grupo grupoFiltrar) {
+		ArrayList<Contacto> listaContactosGrupo = new ArrayList<>();
+		for(Contacto contacto : listaContactos) {
+			if(contacto.verificarGrupo(grupoFiltrar)) {
+				listaContactosGrupo.add(contacto);
+			}
+		}
+		return listaContactosGrupo;
+	}
+
+	/**
+	 * Retorna una matriz de notas de 3 filas dividida de la siguiente manera:
+	 * Fila 0 (representa a las notas que hacen parte de las reuniones  que estén entre la fecha 01/11/2022 y 30/11/2022)
+	 * Fila 1 (representa a las notas que hacen parte de las reuniones que estén entre la fecha 01/12/2022 y 31/12/2022)
+	 * Fila 2  (representa a las notas que hacen parte de las reuniones  que estén entre la fecha 01/01/2022 y 30/12/2022)
+	 * @return
+	 * @throws ParseException
+	 */
+	public Nota[][] darMatrizNotas() throws ParseException {
+		Nota[][] notasPorFechas = new Nota[3][listaNotas.length];
+		notasPorFechas[0] = darNotasFecha("01/11/2022", "30/11/2022"); //Da notas de noviembre
+		notasPorFechas[1] = darNotasFecha("01/12/2022", "31/12/2022"); //Da notas de diciembre
+		notasPorFechas[2] = darNotasFecha("01/01/2022", "30/12/2022"); //Da notas del 2022
+		return notasPorFechas;
+	}
+
+	/**
+	 * Retorna un arreglo de reuniones que cumplan con una fecha inicial y una fecha final
+	 * @param fechaIncial
+	 * @param fechaFinal
+	 * @return
+	 * @throws ParseException
+	 */
+	private Nota[] darNotasFecha(String fechaIncial, String fechaFinal) throws ParseException {
+		Nota[] notas = new Nota[listaNotas.length];
+		int i = 0; //Es para saber en que posición agrego el ultimo elemento y para hacer el copyOf
+		for(Nota nota : listaNotas) {
+			if(nota != null) {
+				if(verificarFechaNota(fechaIncial, fechaFinal, nota.getFecha())) {
+					notas[i] = nota;
+					i++;
+				}
+			}
+		}
+		//Se "corta" el arreglo para que quede exactamente con los elemento que contiene
+		notas = Arrays.copyOf(notas, i);
+		return notas;
+	}
+
+	/**
+	 * Esta funcion revisa si una reunion se encuentra en un rango de fechas
+	 * @param fechaInicialStr
+	 * @param fechaFinalStr
+	 * @param fechaReunionStr
+	 * @return
+	 * @throws ParseException Este throws es para cuando la fecha no cumple con el formato
+	 */
+	public boolean verificarFechaNota(String fechaInicialStr, String fechaFinalStr, String fechaNotaStr) throws ParseException {
+	    SimpleDateFormat formato = new SimpleDateFormat("dd/MM/yyyy");
+	    Date fechaInicial = formato.parse(fechaInicialStr);
+	    Date fechaFinal = formato.parse(fechaFinalStr);
+	    Date fechaNota = formato.parse(fechaNotaStr);
+
+	    if (fechaNota.after(fechaInicial) || fechaNota.equals(fechaInicial)) {
+	        if (fechaNota.before(fechaFinal) || fechaNota.equals(fechaFinal)) {
+	            return true;
+	        }
+	    }
+
+	    return false;
+	}
+
+	/**
+	 * Me devuelve un grupo que se crea con todos los contactos cuyos numeros empiecen por el prefijo
+	 * @param prefijo
+	 * @return
+	 */
+	public Grupo encontrarNumerosPrefijos(String prefijo){
+		//Se le asigna cualquier categoria al grupo
+		Grupo grupoContactosPrefijo = new Grupo("Contactos", getListaContactos().length, Categoria.AMIGOS);
+		ArrayList<Contacto> grupoAux = new ArrayList<>();
+		for (Contacto contacto : listaContactos) {
+			if(contacto.verificarPrefijo(prefijo)) {
+				grupoAux.add(contacto);
+			}
+		}
+		Contacto[] listaContactosPrefijos = new Contacto[grupoAux.size()];
+		listaContactosPrefijos = grupoAux.toArray(listaContactosPrefijos);
+		grupoContactosPrefijo.setListaContactos(listaContactosPrefijos);
+		return grupoContactosPrefijo;
+	}
+
+
+
+
+
 
 
 //------------------------Puntos del preParcial--------------------------------------------------------------------------
@@ -1185,6 +1319,7 @@ public class Agenda implements Serializable {
 		return reuniones;
 	}
 
+
 	/**
 	 *
 	 * @return
@@ -1219,9 +1354,42 @@ public class Agenda implements Serializable {
 
 //----------------------------------------------Ejercicio en clase---------------------------------------------
 
-	/*public ArrayList<Contacto> darContactosCapicua() {
+	/**
+	 * Metodo para devolver una lista con los contactos de la Agenda Telefonica que contengan numero de telefono capicua
+	 * Un numero es capicua cuando se lee de la misma forma de derecha a izquierda que de izquierda a derecha
+	 * @return
+	 */
+	public Object[] devolverContactosConTelefonoCapicua(){
 
-	}*/
+		//Se setea la lista de contactos de la Agenda Telefonica como lista para recorrer el stream
+		List<Contacto> listaContactos = Arrays.asList(getListaContactos());
+
+		//Se crea el arreglo que contiene los contactos que cumplan la condicion de tener numero de telefono capicua
+		Object[] listaContactosCapicua = listaContactos.stream().filter(contacto -> contacto!=null && contacto.isTelefonoCapicua()).toArray();
+
+		return listaContactosCapicua;
+
+	}
+
+
+	/**
+	 *
+	 * @param s
+	 * @return
+	 */
+    public static boolean isPalindrome(String s) {
+        int left = 0;
+        int right = s.length() - 1;
+        while (left < right) {
+            if (s.charAt(left) != s.charAt(right)) {
+                return false;
+            }
+            left++;
+            right--;
+        }
+        return true;
+    }
+
 
 
 

@@ -1,6 +1,7 @@
 package co.uniquindio.pr2.agenda.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 
 public class Reunion implements Serializable{
@@ -122,6 +123,15 @@ public class Reunion implements Serializable{
 		} else if (!hora.equals(other.hora))
 			return false;
 		return true;
+	}
+
+//------------------------------------------SOLUCIÓN PARCIAL-----------------------------------------------------------
+
+	public ArrayList<String> getListaPalabrasComentarios(char letra, ArrayList<String> listaPalabrasComentarioAux) {
+		for(Nota nota : listaNotas) {
+			listaPalabrasComentarioAux = nota.getListaPalabrasComentarios(letra, listaPalabrasComentarioAux);
+		}
+		return listaPalabrasComentarioAux;
 	}
 
 

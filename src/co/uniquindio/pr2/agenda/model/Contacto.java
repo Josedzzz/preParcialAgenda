@@ -128,6 +128,45 @@ public class Contacto implements Serializable {
 	    return true;
 	}
 
+	public boolean isTelefonoCapicua() {
+		//Se obtiene el numero de telefono invertido
+		StringBuilder str = new StringBuilder();
+		str.append(getTelefono());
+		String inverso = str.reverse().toString();
+
+		//Se retorna si el numero de telefono del contacto es un numero capicua
+		//El numero de telefono es capicua si es igual a su inverso
+		return getTelefono().equals(inverso);
+	}
+
+//---------------------------------------RESUELVO PUNTOS DEL PARCIAL--------------------------------------------
+	/**
+	 * verifica si el contacto pertenece al grupoFiltrar
+	 * @param grupoFiltrar
+	 * @return
+	 */
+	public boolean verificarGrupo(Grupo grupoFiltrar) {
+		for(Grupo grupo : listaGrupos) {
+			if(grupo != null && grupo.equals(grupoFiltrar)) {
+				return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * Verifica si el telefono del contacto inicia con el prefijo
+	 * @param prefijo
+	 * @return
+	 */
+	public boolean verificarPrefijo(String prefijo) {
+		String num = telefono;
+		if(num.startsWith(prefijo)){
+			return true;
+		}
+		return false;
+	}
+
 
 
 }

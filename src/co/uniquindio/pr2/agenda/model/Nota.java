@@ -1,6 +1,7 @@
 package co.uniquindio.pr2.agenda.model;
 
 import java.io.Serializable;
+import java.util.ArrayList;
 
 public class Nota implements Serializable{
 
@@ -92,6 +93,27 @@ public class Nota implements Serializable{
 		return true;
 	}
 
+
+//-------------------------------SOLUCION PARCIAL---------------------------------------------------------------------
+	/**
+	 *
+	 * @param letra
+	 * @return
+	 */
+	public ArrayList<String> getListaPalabrasComentarios(char letra, ArrayList<String> listaPalabrasComentarioAux) {
+		String[] arregloPalabrasComentario = darSplitNotasComentarios();
+		for(int i = 0; i < arregloPalabrasComentario.length; i++) {
+			if(arregloPalabrasComentario[i] != null && arregloPalabrasComentario[i].charAt(0) == letra) {
+				listaPalabrasComentarioAux.add(arregloPalabrasComentario[i]);
+			}
+		}
+		return listaPalabrasComentarioAux;
+	}
+
+	private String[] darSplitNotasComentarios() {
+		String[] arreglo = comentarios.split(" ");
+		return arreglo;
+	}
 
 
 }
